@@ -1,6 +1,6 @@
 name: audioplayerui
-description: An UI for audioplayers package
-version: 0.0.1
+description: Flutter package which provides audio player ui for audioplayers package.
+version: 0.0.2
 author: Joran Dob <joran998@gmail.com>
 homepage: https://github.com/qreate/audioplayerui
 issue_tracker: https://github.com/qreate/audioplayerui/issues

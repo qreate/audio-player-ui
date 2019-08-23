@@ -13,6 +13,18 @@ class AudioPlayerController {
   void playLocal(String localPath) {
     audioPlayer.play(localPath, isLocal: true);
   }
+
+  void pause() {
+    audioPlayer.pause();
+  }
+
+  void stop() {
+    audioPlayer.stop();
+  }
+
+  void resume() {
+    audioPlayer.resume();
+  }
 }
 
 class AudioPlayerView extends StatefulWidget {
@@ -21,6 +33,7 @@ class AudioPlayerView extends StatefulWidget {
   final String trackSubtitle;
   final String trackUrl;
   final bool isLocal;
+  final String imageUrl;
 
   const AudioPlayerView(
       {Key key,
@@ -28,7 +41,8 @@ class AudioPlayerView extends StatefulWidget {
       this.trackTitle,
       this.trackSubtitle,
       this.trackUrl,
-      this.isLocal = false})
+      this.isLocal = false,
+      this.imageUrl})
       : super(key: key);
 
   @override
@@ -37,7 +51,8 @@ class AudioPlayerView extends StatefulWidget {
       trackTitle,
       trackSubtitle,
       this.trackUrl,
-      this.isLocal);
+      this.isLocal,
+      this.imageUrl);
 }
 
 class _AudioPlayerViewState extends State<AudioPlayerView> {
@@ -52,13 +67,14 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   final String trackSubtitle;
   final String trackUrl;
   final bool isLocal;
+  final String imageUrl;
 
   //
-  String trackPosition = "0:00";
-  String trackLength = "0:00";
+  String trackPosition = "00:00";
+  String trackLength = "00:00";
 
   _AudioPlayerViewState(this.audioPlayerController, this.trackTitle,
-      this.trackSubtitle, this.trackUrl, this.isLocal);
+      this.trackSubtitle, this.trackUrl, this.isLocal, this.imageUrl);
 
   @override
   void initState() {
@@ -118,8 +134,6 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final TextStyle titleStyle =
-        theme.textTheme.headline.copyWith(color: Colors.white);
     final TextStyle descriptionStyle = theme.textTheme.subhead;
     return Card(
         elevation: 6,
@@ -132,6 +146,16 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
           children: <Widget>[
             // Photo and title.
 
+            imageUrl != null
+                ? Column(
+                    children: <Widget>[
+                      Image.network(imageUrl),
+                      Divider(),
+                    ],
+                  )
+                : Container(
+                    child: null,
+                  ),
             DefaultTextStyle(
               softWrap: false,
               overflow: TextOverflow.ellipsis,
@@ -150,7 +174,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                             ? Expanded(
                                 child: Padding(
                                 padding:
-                                    const EdgeInsets.only(left: 12, top: 10),
+                                    const EdgeInsets.only(left: 18, top: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
@@ -199,6 +223,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                           audioPlayer.resume();
                                         },
                                         tooltip: 'Play',
+                                        backgroundColor: theme.accentColor,
                                         child: Icon(Icons.play_arrow),
                                         mini: true,
                                       )
