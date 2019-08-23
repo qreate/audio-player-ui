@@ -1,14 +1,29 @@
 # audioplayerui
 
-An UI for audioplayers
 
-## Getting Started
+Audio Player UI Plugin.
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## Features
+* Play (url / local file)
+* Resume / pause
+
+## Installation
+
+First, add `audioplayerui` as a dependency in your `pubspec.yaml` file. 
+
+Then add the audioplayer like this 
+
+```dart
+  AudioPlayerController audioPlayerController = AudioPlayerController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AudioPlayerView(
+      audioPlayerController: audioPlayerController,
+      trackUrl: "",
+      trackTitle: "",
+    );
+  }
+``` 
+

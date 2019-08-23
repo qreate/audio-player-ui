@@ -53,6 +53,10 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   final String trackUrl;
   final bool isLocal;
 
+  //
+  String trackPosition = "0:00";
+  String trackLength = "0:00";
+
   _AudioPlayerViewState(this.audioPlayerController, this.trackTitle,
       this.trackSubtitle, this.trackUrl, this.isLocal);
 
@@ -72,11 +76,28 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
 
   _initPositionChangeListener() async {
     audioPlayer.onAudioPositionChanged.listen((Duration p) async {
+      Duration audioPlayerDuration =
+          Duration(milliseconds: await audioPlayer.getDuration());
       int trackDuration = ((await audioPlayer.getDuration()) / 1000).round();
+      String trackLengthFormat = _printDuration(audioPlayerDuration);
+      String trackPositionFormat = _printDuration(p);
       setState(() {
         playbackPosition = (p.inSeconds / trackDuration).toDouble();
+        trackLength = trackLengthFormat;
+        trackPosition = trackPositionFormat;
       });
     });
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   _initTrackChangeListener() {
@@ -103,7 +124,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
     return Card(
         elevation: 6,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            borderRadius: BorderRadius.all(Radius.circular(12.0))),
         color: Colors.white,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -118,32 +139,28 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, top: 4.0),
-                        child: Slider(
-                          onChanged: _seekTrack,
-                          value: playbackPosition,
-                        ),
-                      ),
-                    ],
-                  ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 18, right: 18, bottom: 6),
+                        const EdgeInsets.only(left: 8.0, right: 8.0, top: 8),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         trackTitle != null || trackSubtitle != null
                             ? Expanded(
+                                child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 12, top: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     trackTitle != null
-                                        ? Text(trackTitle)
+                                        ? Text(
+                                            trackTitle,
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                          )
                                         : Container(
                                             child: null,
                                           ),
@@ -154,13 +171,14 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                           ),
                                   ],
                                 ),
-                              )
+                              ))
                             : Container(
                                 child: null,
                               ),
-                        Expanded(
+                        Container(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding:
+                                const EdgeInsets.only(top: 18.0, right: 18),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -176,17 +194,21 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                 audioPlayerState == AudioPlayerState.STOPPED ||
                                         audioPlayerState ==
                                             AudioPlayerState.PAUSED
-                                    ? IconButton(
-                                        icon: Icon(Icons.play_arrow),
+                                    ? FloatingActionButton(
                                         onPressed: () {
                                           audioPlayer.resume();
                                         },
+                                        tooltip: 'Play',
+                                        child: Icon(Icons.play_arrow),
+                                        mini: true,
                                       )
-                                    : IconButton(
-                                        icon: Icon(Icons.pause),
+                                    : FloatingActionButton(
                                         onPressed: () {
                                           audioPlayer.pause();
                                         },
+                                        tooltip: 'Pause',
+                                        child: Icon(Icons.pause),
+                                        mini: true,
                                       ),
                                 hasNext
                                     ? IconButton(
@@ -203,6 +225,44 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                       ],
                     ),
                   ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 8.0,
+                          right: 8.0,
+                          top: 0.0,
+                        ),
+                        child: Slider(
+                          onChanged: _seekTrack,
+                          value: playbackPosition,
+                          activeColor: theme.accentColor,
+                          inactiveColor:
+                              Color.alphaBlend(theme.accentColor, Colors.white),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 28.0,
+                          right: 28.0,
+                          bottom: 12.0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              trackPosition,
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            Text(
+                              trackLength,
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -213,6 +273,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   @override
   void dispose() {
     audioPlayer.release();
+    audioPlayer.dispose();
     super.dispose();
   }
 }
