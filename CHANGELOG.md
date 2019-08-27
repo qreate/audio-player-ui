@@ -1,3 +1,7 @@
+## [0.0.3] - 27/08/2019
+
+* Fixed color for pause button. 
+
 ## [0.0.2] - 23/08/2019
 
 * Implemented basic ui and functions

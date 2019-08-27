@@ -232,6 +232,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                           audioPlayer.pause();
                                         },
                                         tooltip: 'Pause',
+                                        backgroundColor: theme.accentColor,
                                         child: Icon(Icons.pause),
                                         mini: true,
                                       ),
