@@ -1,3 +1,7 @@
+## [0.0.4] - 02/10/2019
+
+* Added autoplay property to controller.
+
 ## [0.0.3] - 27/08/2019
 
 * Fixed color for pause button. 
