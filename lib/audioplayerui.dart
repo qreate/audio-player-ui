@@ -79,15 +79,12 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   @override
   void initState() {
     audioPlayer = audioPlayerController.audioPlayer;
-    _initTrackPlayback();
+    audioPlayer.setUrl(trackUrl, isLocal: isLocal);
+
     _initPositionChangeListener();
     _initTrackChangeListener();
 
     super.initState();
-  }
-
-  _initTrackPlayback() {
-    audioPlayer.play(trackUrl, isLocal: isLocal);
   }
 
   _initPositionChangeListener() async {
@@ -135,6 +132,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextStyle descriptionStyle = theme.textTheme.subhead;
+
     return Card(
         elevation: 6,
         shape: RoundedRectangleBorder(
@@ -224,7 +222,10 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                         },
                                         tooltip: 'Play',
                                         backgroundColor: theme.accentColor,
-                                        child: Icon(Icons.play_arrow),
+                                        child: Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                        ),
                                         mini: true,
                                       )
                                     : FloatingActionButton(
@@ -233,7 +234,10 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                         },
                                         tooltip: 'Pause',
                                         backgroundColor: theme.accentColor,
-                                        child: Icon(Icons.pause),
+                                        child: Icon(
+                                          Icons.pause,
+                                          color: Colors.white,
+                                        ),
                                         mini: true,
                                       ),
                                 hasNext
