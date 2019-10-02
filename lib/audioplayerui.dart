@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 class AudioPlayerController {
   AudioPlayer audioPlayer = AudioPlayer();
 
+  final bool autoPlay;
+
+  AudioPlayerController({this.autoPlay = false});
+
   void play(String url) {
     audioPlayer.play(url);
   }
@@ -79,12 +83,23 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   @override
   void initState() {
     audioPlayer = audioPlayerController.audioPlayer;
-    audioPlayer.setUrl(trackUrl, isLocal: isLocal);
-
+    if (audioPlayerController.autoPlay) {
+      _playTrack();
+    } else {
+      _initTrackPlayback();
+    }
     _initPositionChangeListener();
     _initTrackChangeListener();
 
     super.initState();
+  }
+
+  _initTrackPlayback() {
+    audioPlayer.setUrl(trackUrl, isLocal: isLocal);
+  }
+
+  _playTrack() {
+    audioPlayer.play(trackUrl, isLocal: isLocal);
   }
 
   _initPositionChangeListener() async {
