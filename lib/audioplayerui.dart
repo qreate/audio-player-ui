@@ -96,6 +96,12 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
 
   _initTrackPlayback() {
     audioPlayer.setUrl(trackUrl, isLocal: isLocal);
+    audioPlayer.getDuration().then((duration) {
+      Duration audioPlayerDuration = Duration(milliseconds: duration);
+      setState(() {
+        trackLength = _printDuration(audioPlayerDuration);
+      });
+    });
   }
 
   _playTrack() {
@@ -104,6 +110,12 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
 
   _initPositionChangeListener() async {
     audioPlayer.onAudioPositionChanged.listen((Duration p) async {
+      if (p.inMilliseconds ==
+          Duration(milliseconds: await audioPlayer.getDuration())
+              .inMilliseconds) {
+        audioPlayer.seek(Duration(seconds: 0));
+        audioPlayer.stop();
+      }
       Duration audioPlayerDuration =
           Duration(milliseconds: await audioPlayer.getDuration());
       int trackDuration = ((await audioPlayer.getDuration()) / 1000).round();

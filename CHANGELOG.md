@@ -1,3 +1,7 @@
+## [0.0.5] - 07/11/2019
+
+* Added reset after track playback completed.
+
 ## [0.0.4] - 02/10/2019
 
 * Added autoplay property to controller.
