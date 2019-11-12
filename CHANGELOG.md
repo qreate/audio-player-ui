@@ -1,3 +1,8 @@
+## [0.0.6] - 12/11/2019
+
+* Added example 
+* Updated completed status for button
+
 ## [0.0.5] - 07/11/2019
 
 * Added reset after track playback completed.

@@ -159,7 +159,6 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextStyle descriptionStyle = theme.textTheme.subhead;
-
     return Card(
         elevation: 6,
         shape: RoundedRectangleBorder(
@@ -242,7 +241,9 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
                                       ),
                                 audioPlayerState == AudioPlayerState.STOPPED ||
                                         audioPlayerState ==
-                                            AudioPlayerState.PAUSED
+                                            AudioPlayerState.PAUSED ||
+                                        audioPlayerState ==
+                                            AudioPlayerState.COMPLETED
                                     ? FloatingActionButton(
                                         onPressed: () {
                                           audioPlayer.resume();
