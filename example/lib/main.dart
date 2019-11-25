@@ -98,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
               trackTitle: "test",
               trackUrl:
                   "https://d11b76aq44vj33.cloudfront.net/media/645/audio/5adeecf6e08d8.mp3",
+              simpleDesign: false,
             )
           ],
         ),

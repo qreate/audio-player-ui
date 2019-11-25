@@ -1,3 +1,7 @@
+## [0.0.7] - 25/11/2019
+* refactored code a bit 
+* added new design option with boolean simple design
+
 ## [0.0.6] - 12/11/2019
 
 * Added example 

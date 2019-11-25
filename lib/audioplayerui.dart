@@ -1,6 +1,8 @@
 library audioplayerui;
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayerui/ui/defaultUi.dart';
+import 'package:audioplayerui/ui/simpleUi.dart';
 import 'package:flutter/material.dart';
 
 class AudioPlayerController {
@@ -38,6 +40,7 @@ class AudioPlayerView extends StatefulWidget {
   final String trackUrl;
   final bool isLocal;
   final String imageUrl;
+  final bool simpleDesign;
 
   const AudioPlayerView(
       {Key key,
@@ -46,17 +49,20 @@ class AudioPlayerView extends StatefulWidget {
       this.trackSubtitle,
       this.trackUrl,
       this.isLocal = false,
-      this.imageUrl})
+      this.imageUrl,
+      this.simpleDesign = false})
       : super(key: key);
 
   @override
   _AudioPlayerViewState createState() => _AudioPlayerViewState(
-      audioPlayerController,
-      trackTitle,
-      trackSubtitle,
-      this.trackUrl,
-      this.isLocal,
-      this.imageUrl);
+        audioPlayerController,
+        trackTitle,
+        trackSubtitle,
+        this.trackUrl,
+        this.isLocal,
+        this.imageUrl,
+        this.simpleDesign,
+      );
 }
 
 class _AudioPlayerViewState extends State<AudioPlayerView> {
@@ -72,13 +78,21 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
   final String trackUrl;
   final bool isLocal;
   final String imageUrl;
+  final bool simpleDesign;
 
   //
   String trackPosition = "00:00";
   String trackLength = "00:00";
 
-  _AudioPlayerViewState(this.audioPlayerController, this.trackTitle,
-      this.trackSubtitle, this.trackUrl, this.isLocal, this.imageUrl);
+  _AudioPlayerViewState(
+    this.audioPlayerController,
+    this.trackTitle,
+    this.trackSubtitle,
+    this.trackUrl,
+    this.isLocal,
+    this.imageUrl,
+    this.simpleDesign,
+  );
 
   @override
   void initState() {
@@ -94,14 +108,17 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
     super.initState();
   }
 
-  _initTrackPlayback() {
-    audioPlayer.setUrl(trackUrl, isLocal: isLocal);
-    audioPlayer.getDuration().then((duration) {
-      Duration audioPlayerDuration = Duration(milliseconds: duration);
-      setState(() {
-        trackLength = _printDuration(audioPlayerDuration);
+  _initTrackPlayback() async {
+    await audioPlayer.setUrl(trackUrl, isLocal: isLocal).then((val) {
+      audioPlayer.getDuration().then((duration) {
+        Duration audioPlayerDuration = Duration(milliseconds: duration);
+        print("audioPlayerDuration $duration");
+        setState(() {
+          trackLength = _printDuration(audioPlayerDuration);
+        });
       });
     });
+    print(trackUrl);
   }
 
   _playTrack() {
@@ -157,175 +174,33 @@ class _AudioPlayerViewState extends State<AudioPlayerView> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TextStyle descriptionStyle = theme.textTheme.subhead;
-    return Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12.0))),
-        color: Colors.white,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Photo and title.
-
-            imageUrl != null
-                ? Column(
-                    children: <Widget>[
-                      Image.network(imageUrl),
-                      Divider(),
-                    ],
-                  )
-                : Container(
-                    child: null,
-                  ),
-            DefaultTextStyle(
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
-              style: descriptionStyle,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 8.0, right: 8.0, top: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        trackTitle != null || trackSubtitle != null
-                            ? Expanded(
-                                child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 18, top: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    trackTitle != null
-                                        ? Text(
-                                            trackTitle,
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
-                                          )
-                                        : Container(
-                                            child: null,
-                                          ),
-                                    trackSubtitle != null
-                                        ? Text(trackSubtitle)
-                                        : Container(
-                                            child: null,
-                                          ),
-                                  ],
-                                ),
-                              ))
-                            : Container(
-                                child: null,
-                              ),
-                        Container(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(top: 18.0, right: 18),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                hasPrevious
-                                    ? IconButton(
-                                        icon: Icon(Icons.skip_previous),
-                                        onPressed: () {},
-                                      )
-                                    : Container(
-                                        child: null,
-                                      ),
-                                audioPlayerState == AudioPlayerState.STOPPED ||
-                                        audioPlayerState ==
-                                            AudioPlayerState.PAUSED ||
-                                        audioPlayerState ==
-                                            AudioPlayerState.COMPLETED
-                                    ? FloatingActionButton(
-                                        onPressed: () {
-                                          audioPlayer.resume();
-                                        },
-                                        tooltip: 'Play',
-                                        backgroundColor: theme.accentColor,
-                                        child: Icon(
-                                          Icons.play_arrow,
-                                          color: Colors.white,
-                                        ),
-                                        mini: true,
-                                      )
-                                    : FloatingActionButton(
-                                        onPressed: () {
-                                          audioPlayer.pause();
-                                        },
-                                        tooltip: 'Pause',
-                                        backgroundColor: theme.accentColor,
-                                        child: Icon(
-                                          Icons.pause,
-                                          color: Colors.white,
-                                        ),
-                                        mini: true,
-                                      ),
-                                hasNext
-                                    ? IconButton(
-                                        icon: Icon(Icons.skip_next),
-                                        onPressed: () {},
-                                      )
-                                    : Container(
-                                        child: null,
-                                      ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8.0,
-                          right: 8.0,
-                          top: 0.0,
-                        ),
-                        child: Slider(
-                          onChanged: _seekTrack,
-                          value: playbackPosition,
-                          activeColor: theme.accentColor,
-                          inactiveColor:
-                              Color.alphaBlend(theme.accentColor, Colors.white),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 28.0,
-                          right: 28.0,
-                          bottom: 12.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              trackPosition,
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              trackLength,
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ));
+    return simpleDesign
+        ? SimpleUi(
+            audioPlayer: audioPlayer,
+            imageUrl: imageUrl,
+            trackTitle: trackTitle,
+            trackSubtitle: trackSubtitle,
+            hasNext: hasNext,
+            hasPrevious: hasPrevious,
+            playbackPosition: playbackPosition,
+            audioPlayerState: audioPlayerState,
+            trackPosition: trackPosition,
+            trackLength: trackLength,
+            seekTrack: _seekTrack,
+          )
+        : DefaultUi(
+            audioPlayer: audioPlayer,
+            imageUrl: imageUrl,
+            trackTitle: trackTitle,
+            trackSubtitle: trackSubtitle,
+            hasNext: hasNext,
+            hasPrevious: hasPrevious,
+            playbackPosition: playbackPosition,
+            audioPlayerState: audioPlayerState,
+            trackPosition: trackPosition,
+            trackLength: trackLength,
+            seekTrack: _seekTrack,
+          );
   }
 
   @override
